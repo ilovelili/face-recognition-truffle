@@ -6,11 +6,12 @@ $(function() {
 	const sendTxButton = $("#send-tx");
 	const txDetails = `<input type='file'></input>`;
 	const ganacheUrl = "http://127.0.0.1:8545";
-	const abiJsonUrl = "https://raw.githubusercontent.com/ilovelili/face-recognition-truffle/master/src/abis/MyMumber.json";
+	const abiJsonUrl = "https://raw.githubusercontent.com/ilovelili/face-recognition-truffle/master/src/abis/MyNumber.json";
 	const ipfs = IpfsHttpClient({ host: "ipfs.infura.io", port: "5001", protocol: "https" });
 
 	let dataURL;
 	let account;
+	let fileHashUrl;
 
 	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 		navigator.mediaDevices
@@ -81,11 +82,22 @@ $(function() {
 			return;
 		}
 
-		const json = await $.getJSON(abiJsonUrl);
-		console.log(json);
-
-		const networkData = json.networks[networkId];
+		console.log(`network id is ${networkId}`);
+		const MyNumber = await $.getJSON(abiJsonUrl);
+		const networkData = MyNumber.networks[networkId];
 		console.log(networkData);
+
+		if (networkData) {
+			const abi = MyNumber.abi;
+			const address = networkData.address;
+			const contract = new web3.eth.Contract(abi, address);
+			// call 'get' method in smart contract
+			const fileHash = await contract.methods.get().call();
+			fileHashUrl = `https://ipfs.infura.io/ipfs/${fileHash}`;
+			console.log(fileHashUrl);
+		} else {
+			window.alert("Smart contract not deployed to the nerwork");
+		}
 
 		$.ajax({
 			type: "POST",
