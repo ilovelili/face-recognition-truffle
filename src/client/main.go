@@ -18,7 +18,7 @@ const (
 
 func main() {
 	var (
-		addr  = flag.String("addr", ":9000", "address")
+		addr  = flag.String("addr", ":3000", "address")
 		state = flag.String("state", "", "facebox state file")
 	)
 

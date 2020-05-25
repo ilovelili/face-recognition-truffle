@@ -1,19 +1,19 @@
-const Meme = artifacts.require("Meme");
+const MyNumber = artifacts.require("MyNumber");
 
 require("chai")
 	.use(require("chai-as-promised"))
 	.should();
 
-contract("Meme", (accounts) => {
-	let meme;
+contract("MyNumber", (accounts) => {
+	let mynumber;
 
 	before(async () => {
-		meme = await Meme.deployed();
+		mynumber = await MyNumber.deployed();
 	});
 
 	describe("deployment", async () => {
 		it("deploys successfully", async () => {
-			const address = meme.address;
+			const address = mynumber.address;
 			assert.notEqual(address, 0x0);
 			assert.notEqual(address, "");
 			assert.notEqual(address, null);
@@ -22,11 +22,11 @@ contract("Meme", (accounts) => {
 	});
 
 	describe("storage", async () => {
-		it("updates the memeHash", async () => {
-			let memeHash = "123abc";
-			await meme.set(memeHash);
-			const result = await meme.get();
-			assert.equal(result, memeHash);
+		it("updates the fileHash", async () => {
+			let fileHash = "123abc";
+			await mynumber.set(fileHash);
+			const result = await mynumber.get();
+			assert.equal(result, fileHash);
 		});
 	});
 });

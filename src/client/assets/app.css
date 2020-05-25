@@ -10,6 +10,10 @@ body {
 	height: 20px;
 }
 
+video {
+	margin: auto;
+}
+
 .options {
 	top: 0;
 	left: 0;
@@ -22,7 +26,7 @@ body {
 }
 
 .options .message {
-	width: 300px;
+	max-width: 500px;
 	margin: auto;
 	margin-top: 10px;
 }

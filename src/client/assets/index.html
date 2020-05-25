@@ -19,24 +19,19 @@
   </div>
 
   <div class='options'>
-    <button id="teach" class="ui teal massive circular icon button" style='display:none'>
-      <i class='camera icon'></i>
-      Teach
-    </button>
-
-    <button id="send-tx" class="ui teal massive circular icon button">
-      <i class='bolt icon'></i>
-      Send transaction
+    <button id="send-tx" class="ui teal circular icon button">
+      Upload My Number
     </button>
     <div class='ui info message' style='display:none'></div>
   </div>
 
-  <video id="video" width="300" muted autoplay></video>
+  <video id="video" width="400" height="225" muted autoplay></video>
   <canvas id="canvas" width="400" height="225" style="display:none;"></canvas>
   <script src='https://code.jquery.com/jquery-3.2.1.min.js'
     integrity='sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=' crossorigin='anonymous'></script>
   <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.min.js"></script>
   <script src='/assets/arg.js'></script>
   <script src='/assets/app.js'></script>
 </body>

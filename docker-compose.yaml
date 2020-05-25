@@ -5,7 +5,7 @@ services:
     image: trufflesuite/ganache-cli
     ports:
       - "8545:8545"
-    command: "ganache-cli -d -l 20000000"
+    command: "ganache-cli -d -m -i 100 -l 20000000"
 
   facebox:
     restart: unless-stopped
@@ -19,6 +19,6 @@ services:
       dockerfile: Dockerfile
       context: .
     ports:
-      - 9000:9000
+      - 3000:3000
     depends_on:
       - facebox

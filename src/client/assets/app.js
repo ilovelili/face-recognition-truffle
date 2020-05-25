@@ -3,14 +3,14 @@ $(function() {
 	const context = canvas.getContext("2d");
 	const video = document.getElementById("video");
 	const button1 = $("#snap");
-	const teachButton = $("#teach");
 	const sendTxButton = $("#send-tx");
-	const txDetails = `<label for="">Receiver Address</label>
-  <input type='text' id='amount'></input>`;
+	const txDetails = `<input type='file'></input>`;
 	const ganacheUrl = "http://127.0.0.1:8545";
-	let dataURL;
+	const abiJsonUrl = "https://raw.githubusercontent.com/ilovelili/face-recognition-truffle/master/src/abis/MyMumber.json";
+	const ipfs = IpfsHttpClient({ host: "ipfs.infura.io", port: "5001", protocol: "https" });
 
-	document.querySelector("#teach").style.display = "none";
+	let dataURL;
+	let account;
 
 	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 		navigator.mediaDevices
@@ -23,30 +23,30 @@ $(function() {
 			});
 	}
 
-	function setVariablesForTx() {
+	function uploadMyNumber() {
 		event.preventDefault();
 		$(".ui.modal").modal("hide");
-		var name = event.target[1].value;
-		var amount = event.target[0].value;
+		// var name = event.target[1].value;
+		// var amount = event.target[0].value;
 		$(".info.message")
-			.text(`Successfully sent ${amount} to ${name}`)
+			.text(`Upload completed`)
 			.fadeIn();
 	}
 
 	// Send transaction function
 	function sendTransaction() {
 		console.log("send tx");
-		document.querySelector("#modal-header").innerText = "Send transaction";
-		document.querySelector(".name-form").insertAdjacentHTML("afterbegin", txDetails);
+		const form = document.querySelector(".name-form");
+		document.querySelector("#modal-header").innerText = `Upload My Number`;
+		form.insertAdjacentHTML("afterbegin", txDetails);
 		$(".ui.modal").modal("show");
-		document.querySelector(".name-form").addEventListener("submit", setVariablesForTx);
+		form.addEventListener("submit", uploadMyNumber);
 	}
 
-	function fetchName() {
+	async function fetchName() {
 		event.preventDefault();
 		var name = event.target[0].value;
-		var id = event.target[1].value;
-		sendTeachData(name);
+		await sendTeachData(name);
 		$(".ui.modal").modal("hide");
 		document.querySelector(".name-form").removeEventListener("submit", fetchName, { passive: true });
 	}
@@ -65,36 +65,42 @@ $(function() {
 	}
 
 	// Send data to api
-	function sendTeachData(name) {
+	async function sendTeachData(name) {
 		const web3 = new Web3(new Web3.providers.HttpProvider(ganacheUrl));
-		const address = web3.eth.personal.newAccount(name);
+		let accounts = await web3.eth.getAccounts();
+		if (accounts.length) {
+			account = accounts[0];
+		} else {
+			window.alert("no account");
+			return;
+		}
+
+		let networkId = await web3.eth.net.getId();
+		if (!networkId) {
+			window.alert("no network id");
+			return;
+		}
+
+		const json = await $.getJSON(abiJsonUrl);
+		console.log(json);
+
+		const networkData = json.networks[networkId];
+		console.log(networkData);
+
 		$.ajax({
 			type: "POST",
 			url: "/facebox/teach",
 			data: {
 				imgBase64: dataURL,
 				name: name,
-				id: address,
+				id: account,
 			},
 			success: function(resp) {
 				console.log(resp);
-				teachButton[0].style.display = "none";
 				sendTxButton[0].style.display = "";
-				address.then((add) =>
-					$(".info.message")
-						.text(`Welcome, ${name}. Your address is ${add}`)
-						.fadeIn()
-				);
-				teachButton
-					.empty()
-					.append(
-						$("<i>", {
-							class: "check icon",
-						})
-					)
-					.removeClass("teal")
-					.addClass("green")
-					.transition("tada");
+				$(".info.message")
+					.text(`Welcome, ${name}. Your address is ${account}`)
+					.fadeIn();
 			},
 			error: function() {
 				$(".info.message")
@@ -135,7 +141,6 @@ $(function() {
 				if (!resp.matched) {
 					console.log("unsuccessfull");
 					sendTxButton.transition("shake");
-					teachButton[0].style.display = "";
 					sendTxButton[0].style.display = "none";
 					// call teach function
 					startTeaching();
