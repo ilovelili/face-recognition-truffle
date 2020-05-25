@@ -6,7 +6,7 @@ $(function() {
 	const sendTxButton = $("#send-tx");
 	const txDetails = `<input type='file'></input>`;
 	const ganacheUrl = "http://127.0.0.1:8545";
-	const abiJsonUrl = "https://raw.githubusercontent.com/ilovelili/face-recognition-truffle/master/src/abis/MyNumber.json";
+	let abiJsonUrl = `https://raw.githubusercontent.com/ilovelili/face-recognition-truffle/master/src/abis/MyNumber.json?d=${new Date().getTime()}`;
 	const ipfs = IpfsHttpClient({ host: "ipfs.infura.io", port: "5001", protocol: "https" });
 
 	let dataURL;
