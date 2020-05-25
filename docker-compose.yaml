@@ -14,3 +14,12 @@ services:
       - 8080:8080
     environment:
       - MB_KEY=NzFjZGJmNzUzYmNlYjMwOWFkYTNiNjhiMWFmNjBjOTQ.Lu0oQeEWNmTewONjlTHnrwyLkBA5E7BqH_bljeX--GbYdDuXFO0mLO9EzGWqJ0KzIltpeU9PnqxjzGwU2ii5QQ
+
+  client-api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 3000:3000
+    depends_on:
+      - facebox
