@@ -74,6 +74,20 @@ $(function() {
 		return true;
 	}
 
+	async function loadImage() {
+		let web3loaded = await loadWeb3();
+		if (!web3loaded) return;
+
+		contract.methods
+			.get()
+			.call()
+			.then((fileHash) => {
+				fileHashUrl = `https://ipfs.infura.io/ipfs/${fileHash}`;
+				console.log(fileHashUrl);
+				imageContainer.attr("src", fileHashUrl);
+			});
+	}
+
 	function captureFile() {
 		event.preventDefault();
 		const file = event.target.files[0];
@@ -102,17 +116,15 @@ $(function() {
 					imageContainer.attr("src", fileHashUrl);
 
 					$(".ui.modal").modal("hide");
-					// var name = event.target[1].value;
-					// var amount = event.target[0].value;
 					$(".info.message")
-						.text(`Upload completed`)
+						.text(`Upload completed. ${fileHashUrl}`)
 						.fadeIn();
 				});
 		}
 	}
 
 	// Send transaction function
-	function sendTransaction() {
+	function showUploadModal() {
 		console.log("send tx");
 		const form = document.querySelector(".name-form");
 		document.querySelector("#modal-header").innerText = `Upload My Number`;
@@ -156,14 +168,6 @@ $(function() {
 
 	// Send data to api
 	async function sendTeachData(name) {
-		let web3loaded = await loadWeb3();
-		if (!web3loaded) return;
-
-		const fileHash = await contract.methods.get().call();
-		fileHashUrl = `https://ipfs.infura.io/ipfs/${fileHash}`;
-		console.log(fileHashUrl);
-		imageContainer.attr("src", fileHashUrl);
-
 		$.ajax({
 			type: "POST",
 			url: "/facebox/teach",
@@ -230,7 +234,7 @@ $(function() {
 				console.log("success");
 				console.info(resp);
 
-				sendTransaction();
+				showUploadModal();
 			},
 			error: function() {
 				$(".info.message")
@@ -242,4 +246,6 @@ $(function() {
 			},
 		});
 	});
+
+	loadImage();
 });
