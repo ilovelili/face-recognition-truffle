@@ -5,7 +5,8 @@ $(function() {
 	const button1 = $("#snap");
 	const sendTxButton = $("#send-tx");
 	const txDetails = `<input type='file'></input>`;
-	const ganacheUrl = "http://127.0.0.1:8545";
+	// const networkUrl = "http://127.0.0.1:8545";
+	const nerworkUrl = "https://ropsten.infura.io/v3/18c0c6beb5764a6fbd1e8a71ec841e8a";
 	let abiJsonUrl = `https://raw.githubusercontent.com/ilovelili/face-recognition-truffle/master/src/abis/MyNumber.json?d=${new Date().getTime()}`;
 	const ipfs = IpfsHttpClient({ host: "ipfs.infura.io", port: "5001", protocol: "https" });
 
@@ -67,7 +68,7 @@ $(function() {
 
 	// Send data to api
 	async function sendTeachData(name) {
-		const web3 = new Web3(new Web3.providers.HttpProvider(ganacheUrl));
+		const web3 = new Web3(new Web3.providers.HttpProvider(networkUrl));
 		let accounts = await web3.eth.getAccounts();
 		if (accounts.length) {
 			account = accounts[0];
