@@ -11,8 +11,8 @@
     <div class="header" id="modal-header">I don't know you... What's your name?</div>
     <div class="content">
       <form class="name-form">
-        <label for="">Name</label>
-        <input type="text" id="name" />
+        <label for="" class="input-name">Name</label>
+        <input type="text" id="name" class="input-name" />
         <input class="ui approve button" type="submit" />
       </form>
     </div>
@@ -25,7 +25,13 @@
     <div class='ui info message' style='display:none'></div>
   </div>
 
-  <video id="video" width="400" height="225" muted autoplay></video>
+  <div>
+    <img id="my-number" />
+  </div>
+
+  <div>
+    <video id="video" width="400" height="225" muted autoplay></video>
+  </div>
   <canvas id="canvas" width="400" height="225" style="display:none;"></canvas>
   <script src='https://code.jquery.com/jquery-3.2.1.min.js'
     integrity='sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=' crossorigin='anonymous'></script>

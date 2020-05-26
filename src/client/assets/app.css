@@ -11,6 +11,7 @@ body {
 }
 
 video {
+	display: block;
 	margin: auto;
 }
 
@@ -29,4 +30,11 @@ video {
 	max-width: 500px;
 	margin: auto;
 	margin-top: 10px;
+}
+
+#my-number {
+	max-width: 500px;
+	max-height: 225px;
+	display: block;
+	margin: 0 auto;
 }

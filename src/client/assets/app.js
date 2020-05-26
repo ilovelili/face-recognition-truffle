@@ -4,15 +4,19 @@ $(function() {
 	const video = document.getElementById("video");
 	const button1 = $("#snap");
 	const sendTxButton = $("#send-tx");
-	const txDetails = `<input type='file'></input>`;
+	const imageContainer = $("#my-number");
+	const txDetails = `<input id="uploader" type='file'></input>`;
 	// const networkUrl = "http://127.0.0.1:8545";
-	const nerworkUrl = "https://ropsten.infura.io/v3/18c0c6beb5764a6fbd1e8a71ec841e8a";
+	const networkUrl = "https://ropsten.infura.io/v3/18c0c6beb5764a6fbd1e8a71ec841e8a";
 	let abiJsonUrl = `https://raw.githubusercontent.com/ilovelili/face-recognition-truffle/master/src/abis/MyNumber.json?d=${new Date().getTime()}`;
 	const ipfs = IpfsHttpClient({ host: "ipfs.infura.io", port: "5001", protocol: "https" });
 
 	let dataURL;
 	let account;
 	let fileHashUrl;
+	let web3;
+	let data;
+	let contract;
 
 	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 		navigator.mediaDevices
@@ -25,14 +29,86 @@ $(function() {
 			});
 	}
 
-	function uploadMyNumber() {
+	async function loadWeb3() {
+		// already loaded
+		if (contract) return true;
+
+		if (window.ethereum) {
+			// new Web3(new Web3.providers.HttpProvider(ganacheUrl));
+			web3 = new Web3(window.ethereum);
+			await window.ethereum.enable;
+		} else if (window.web3) {
+			web3 = new Web3(window.web3.currentProvider);
+		} else {
+			web3 = new Web3(new Web3.providers.HttpProvider(networkUrl));
+		}
+
+		let accounts = await web3.eth.getAccounts();
+		if (accounts.length) {
+			account = accounts[0];
+		} else {
+			window.alert("no account");
+			return false;
+		}
+
+		let networkId = await web3.eth.net.getId();
+		if (!networkId) {
+			window.alert("no network id");
+			return false;
+		}
+
+		console.log(`network id is ${networkId}`);
+		const MyNumber = await $.getJSON(abiJsonUrl);
+		const networkData = MyNumber.networks[networkId];
+		console.log(networkData);
+
+		if (networkData) {
+			const abi = MyNumber.abi;
+			const address = networkData.address;
+			contract = new web3.eth.Contract(abi, address);
+		} else {
+			window.alert("Smart contract not deployed to the nerwork");
+			return false;
+		}
+
+		return true;
+	}
+
+	function captureFile() {
 		event.preventDefault();
-		$(".ui.modal").modal("hide");
-		// var name = event.target[1].value;
-		// var amount = event.target[0].value;
-		$(".info.message")
-			.text(`Upload completed`)
-			.fadeIn();
+		const file = event.target.files[0];
+		// convert file to buffer
+		const reader = new window.FileReader();
+		reader.readAsArrayBuffer(file);
+		reader.onloadend = () => {
+			data = reader.result;
+		};
+	}
+
+	async function uploadMyNumber() {
+		event.preventDefault();
+
+		let web3loaded = await loadWeb3();
+		if (!web3loaded) return;
+
+		for await (const result of ipfs.add(data)) {
+			const fileHash = result.path;
+			contract.methods
+				.set(fileHash)
+				.send({ from: account })
+				.then((_) => {
+					fileHashUrl = `https://ipfs.infura.io/ipfs/${fileHash}`;
+					console.log(fileHashUrl);
+					imageContainer.attr("src", fileHashUrl);
+
+					$(".ui.modal").modal("hide");
+					// var name = event.target[1].value;
+					// var amount = event.target[0].value;
+					$(".info.message")
+						.text(`Upload completed`)
+						.fadeIn();
+				});
+		}
 	}
 
 	// Send transaction function
@@ -40,8 +116,20 @@ $(function() {
 		console.log("send tx");
 		const form = document.querySelector(".name-form");
 		document.querySelector("#modal-header").innerText = `Upload My Number`;
-		form.insertAdjacentHTML("afterbegin", txDetails);
+		let uploader = document.querySelector("#uploader");
+
+		if (!uploader) {
+			form.insertAdjacentHTML("afterbegin", txDetails);
+			uploader = document.querySelector("#uploader");
+		}
+
+		nameIuputs = document.querySelectorAll(".input-name");
+		for (let i = 0; i < nameIuputs.length; i++) {
+			$(nameIuputs[i]).css("display", "none");
+		}
+
 		$(".ui.modal").modal("show");
+		uploader.addEventListener("change", captureFile);
 		form.addEventListener("submit", uploadMyNumber);
 	}
 
@@ -68,37 +156,13 @@ $(function() {
 
 	// Send data to api
 	async function sendTeachData(name) {
-		const web3 = new Web3(new Web3.providers.HttpProvider(networkUrl));
-		let accounts = await web3.eth.getAccounts();
-		if (accounts.length) {
-			account = accounts[0];
-		} else {
-			window.alert("no account");
-			return;
-		}
+		let web3loaded = await loadWeb3();
+		if (!web3loaded) return;
 
-		let networkId = await web3.eth.net.getId();
-		if (!networkId) {
-			window.alert("no network id");
-			return;
-		}
-
-		console.log(`network id is ${networkId}`);
-		const MyNumber = await $.getJSON(abiJsonUrl);
-		const networkData = MyNumber.networks[networkId];
-		console.log(networkData);
-
-		if (networkData) {
-			const abi = MyNumber.abi;
-			const address = networkData.address;
-			const contract = new web3.eth.Contract(abi, address);
-			// call 'get' method in smart contract
-			const fileHash = await contract.methods.get().call();
-			fileHashUrl = `https://ipfs.infura.io/ipfs/${fileHash}`;
-			console.log(fileHashUrl);
-		} else {
-			window.alert("Smart contract not deployed to the nerwork");
-		}
+		const fileHash = await contract.methods.get().call();
+		fileHashUrl = `https://ipfs.infura.io/ipfs/${fileHash}`;
+		console.log(fileHashUrl);
+		imageContainer.attr("src", fileHashUrl);
 
 		$.ajax({
 			type: "POST",
@@ -161,7 +225,7 @@ $(function() {
 				}
 				console.log(resp);
 				$(".info.message")
-					.text(`You got approved to send a Tx ${resp.name}`)
+					.text(`You are authorized ${resp.name}`)
 					.fadeIn();
 				console.log("success");
 				console.info(resp);
