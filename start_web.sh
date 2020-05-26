@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker-compose --build up --build client-api
+docker-compose up --build client-api

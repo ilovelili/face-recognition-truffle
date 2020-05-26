@@ -17,6 +17,7 @@ $(function() {
 	let web3;
 	let data;
 	let contract;
+	let name;
 
 	if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 		navigator.mediaDevices
@@ -127,7 +128,7 @@ $(function() {
 	function showUploadModal() {
 		console.log("send tx");
 		const form = document.querySelector(".name-form");
-		document.querySelector("#modal-header").innerText = `Upload My Number`;
+		document.querySelector("#modal-header").innerText = `Upload your my number card, ${name}`;
 		let uploader = document.querySelector("#uploader");
 
 		if (!uploader) {
@@ -228,8 +229,9 @@ $(function() {
 					return;
 				}
 				console.log(resp);
+				name = resp.name;
 				$(".info.message")
-					.text(`You are authorized ${resp.name}`)
+					.text(`You are authorized ${name}`)
 					.fadeIn();
 				console.log("success");
 				console.info(resp);
