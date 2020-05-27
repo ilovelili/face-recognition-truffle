@@ -10,11 +10,6 @@ body {
 	height: 20px;
 }
 
-video {
-	display: block;
-	margin: 30px auto 0 auto;
-}
-
 .options {
 	top: 0;
 	left: 0;
@@ -32,9 +27,6 @@ video {
 	margin-top: 10px;
 }
 
-#my-number {
-	max-width: 500px;
-	max-height: 225px;
-	display: block;
-	margin: 0 auto 30px auto;
+#upload-panel {
+	margin-top: 20px;
 }

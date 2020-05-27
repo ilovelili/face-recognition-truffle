@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/machinebox/sdk-go/boxutil"
@@ -18,7 +17,7 @@ const (
 
 func main() {
 	var (
-		addr  = flag.String("addr", ":3000", "address")
+		addr  = flag.String("addr", ":4200", "address")
 		state = flag.String("state", "", "facebox state file")
 	)
 
@@ -31,10 +30,8 @@ func main() {
 	fmt.Println("Go to:", *addr+"...")
 	setupFaceboxState(facebox, *state)
 
-	srv := NewServer("./assets", facebox)
-	if err := http.ListenAndServe(*addr, srv); err != nil {
-		log.Fatalln(err)
-	}
+	srv := NewServer(facebox)
+	srv.server.Start(*addr)
 }
 
 func setupFaceboxState(facebox *facebox.Client, state string) {

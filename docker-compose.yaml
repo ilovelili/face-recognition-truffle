@@ -15,13 +15,21 @@ services:
     environment:
       - MB_KEY=NzFjZGJmNzUzYmNlYjMwOWFkYTNiNjhiMWFmNjBjOTQ.Lu0oQeEWNmTewONjlTHnrwyLkBA5E7BqH_bljeX--GbYdDuXFO0mLO9EzGWqJ0KzIltpeU9PnqxjzGwU2ii5QQ
 
-  client-api:
+  web:
     build:
       dockerfile: Dockerfile
       context: .
     ports:
-      - 3000:3000
-    volumes:
-      - ./src/client/assets:/assets
+      - 4200:4200
     depends_on:
       - facebox
+  # client-api:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: .
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./src/client/assets:/assets
+  #   depends_on:
+  #     - server
