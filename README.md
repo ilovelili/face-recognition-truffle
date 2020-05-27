@@ -13,3 +13,5 @@
 ```bash
 ./start_server.sh
 ```
+
+Then access `http://localhost:4200`
