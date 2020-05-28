@@ -219,11 +219,18 @@ class App extends Component {
 										<input type="file" onChange={this.captureFile} />
 										<input type="submit" />
 									</form>
-									<img
-										style={{ maxWidth: "300px", marginTop: "50px" }}
-										src={`https://ipfs.infura.io/ipfs/${this.state.fileHash}`}
-										alt="meme"
-									/>
+
+									<div style={{ marginTop: "30px" }}>
+										<small>{`https://ipfs.infura.io/ipfs/${this.state.fileHash}`}</small>
+									</div>
+
+									<div>
+										<img
+											style={{ maxWidth: "300px", marginTop: "20px" }}
+											src={`https://ipfs.infura.io/ipfs/${this.state.fileHash}`}
+											alt="meme"
+										/>
+									</div>
 								</div>
 							</div>
 						</main>
